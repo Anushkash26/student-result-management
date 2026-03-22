@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Result Management</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f0f4f8; padding: 30px; }
+    h1 { text-align: center; color: #2d3748; margin-bottom: 30px; }
+    .card {
+      background: white; border-radius: 10px;
+      padding: 24px; max-width: 500px;
+      margin: 0 auto 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h2 { color: #4a5568; margin-bottom: 16px; }
+    input {
+      width: 100%; padding: 10px; margin-bottom: 12px;
+      border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px;
+    }
+    button {
+      width: 100%; padding: 12px; background: #4299e1;
+      color: white; border: none; border-radius: 6px;
+      font-size: 15px; cursor: pointer;
+    }
+    button:hover { background: #3182ce; }
+    table {
+      width: 100%; border-collapse: collapse;
+      background: white; border-radius: 10px;
+      overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 700px; margin: 0 auto;
+    }
+    th { background: #4299e1; color: white; padding: 12px; text-align: left; }
+    td { padding: 11px 12px; border-bottom: 1px solid #e2e8f0; }
+    tr:hover td { background: #ebf8ff; }
+    .grade { font-weight: bold; }
+    .A { color: #38a169; } .B { color: #3182ce; }
+    .C { color: #d69e2e; } .F { color: #e53e3e; }
+    .del-btn {
+      width: auto; padding: 5px 12px;
+      background: #fc8181; font-size: 13px;
+    }
+    .del-btn:hover { background: #e53e3e; }
+  </style>
+</head>
+<body>
+
+<h1>🎓 Student Result Management</h1>
+
+<div class="card">
+  <h2>Add Student Result</h2>
+  <input type="text"   id="name"    placeholder="Student Name" />
+  <input type="text"   id="subject" placeholder="Subject" />
+  <input type="number" id="marks"   placeholder="Marks (0-100)" min="0" max="100" />
+  <button onclick="addStudent()">Add Result</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th><th>Name</th><th>Subject</th><th>Marks</th><th>Grade</th><th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="resultsTable">
+    <tr><td colspan="6" style="text-align:center;color:#a0aec0;padding:20px">No results yet</td></tr>
+  </tbody>
+</table>
+
+<script>
+  const API = "http://localhost:8080/api/students";
+
+  function getGrade(marks) {
+    if (marks >= 75) return "A";
+    if (marks >= 60) return "B";
+    if (marks >= 40) return "C";
+    return "F";
+  }
+
+  async function loadStudents() {
+    const res = await fetch(API);
+    const students = await res.json();
+    const tbody = document.getElementById("resultsTable");
+    if (students.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#a0aec0;padding:20px">No results yet</td></tr>';
+      return;
+    }
+    tbody.innerHTML = students.map((s, i) => {
+      const grade = getGrade(s.marks);
+      return `<tr>
+        <td>${i+1}</td>
+        <td>${s.name}</td>
+        <td>${s.subject}</td>
+        <td>${s.marks}</td>
+        <td class="grade ${grade}">${grade}</td>
+        <td><button class="del-btn" onclick="deleteStudent(${s.id})">Delete</button></td>
+      </tr>`;
+    }).join("");
+  }
+
+  async function addStudent() {
+    const name    = document.getElementById("name").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    const marks   = parseInt(document.getElementById("marks").value);
+    if (!name || !subject || isNaN(marks)) {
+      alert("Please fill all fields!"); return;
+    }
+    await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, subject, marks })
+    });
+    document.getElementById("name").value = "";
+    document.getElementById("subject").value = "";
+    document.getElementById("marks").value = "";
+    loadStudents();
+  }
+
+  async function deleteStudent(id) {
+    await fetch(API + "/" + id, { method: "DELETE" });
+    loadStudents();
+  }
+
+  loadStudents();
+</script>
+</body>
+</html>
