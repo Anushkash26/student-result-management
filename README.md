@@ -67,7 +67,6 @@ student-result/
 - VS Code with Extension Pack for Java
 - Spring Boot Extension Pack (VS Code)
 - Any modern web browser
-- Backend Knowledge
 
 ---
 
