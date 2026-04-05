@@ -66,7 +66,8 @@ student-result/
 - Java 17 or above
 - VS Code with Extension Pack for Java
 - Spring Boot Extension Pack (VS Code)
-- Any modern web browser
+- Any modern web browser 
+---------------
 
 ---
 
