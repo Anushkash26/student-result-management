@@ -49,6 +49,7 @@ student-result/
 ├── pom.xml
 └── README.md
 
+
 ---
 
 ## 🔗 REST API Endpoints
@@ -66,6 +67,7 @@ student-result/
 - VS Code with Extension Pack for Java
 - Spring Boot Extension Pack (VS Code)
 - Any modern web browser
+- Backend Knowledge
 
 ---
 
